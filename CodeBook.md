@@ -10,15 +10,6 @@ First ensure the package(data.table) is installed:
 install.packages("data.table")
 ```
 
-```
-## Installing package into 'C:/Users/Edward/Documents/R/win-library/3.1'
-## (as 'lib' is unspecified)
-```
-
-```
-## Error: trying to use CRAN without setting a mirror
-```
-
 
 ## Download and Directory designation
 To ensure reproducible processing, this script checks and creates a new directory on the home c:/ directory called ~/coursera_project/.  This is to create an unambiguous location across machines.  Next the data is downloaded, unzipped and renamed for easy scripting.  If you are using a mac, please use:
@@ -26,11 +17,6 @@ To ensure reproducible processing, this script checks and creates a new director
 ```r
 download.file(url, destfile = "dataset.zip", mode = "wb", method = "curl")
 ```
-
-```
-## Error: cannot coerce type 'closure' to vector of type 'character'
-```
-
 to download files, this uses the "curl" method to get the file.  
 
 ## Creating Variable and ID data
@@ -38,112 +24,26 @@ This section of code is used to load the data on activity descriptions and featu
 
 ```r
 activity <- read.table("./data/activity_labels.txt")
-```
-
-```
-## Warning: cannot open file './data/activity_labels.txt': No such file or
-## directory
-```
-
-```
-## Error: cannot open the connection
-```
-
-```r
 names(activity) <- c("activity.code", "activity")
-```
-
-```
-## Error: object 'activity' not found
-```
-
-```r
 features <- read.table("./data/features.txt")
-```
-
-```
-## Warning: cannot open file './data/features.txt': No such file or directory
-```
-
-```
-## Error: cannot open the connection
 ```
 
 Also, this section creates the index of variables that subsets to just mean and standard deviation variables out of the 561 total variables in features. These variables have "mean()" or "std()" exactly in the title.  The ultimate goal is to produce a character vector containing the column titles of the variables of interest.
 
 ```r
 mean.pos <- grep("mean()", as.character(features$V2), fixed = TRUE)
-```
-
-```
-## Error: object 'features' not found
-```
-
-```r
 mean.pos <- data.table(V1 = mean.pos, mean.pos = rep(TRUE, length.out = length(mean.pos)))
-```
-
-```
-## Error: could not find function "data.table"
-```
-
-```r
 # Standard Deviation sub vars
 std.pos <- grep("std()", as.character(features$V2), fixed = TRUE)
-```
-
-```
-## Error: object 'features' not found
-```
-
-```r
 std.pos <- data.table(V1 = std.pos, std.pos = rep(TRUE, length.out = length(std.pos)))
-```
-
-```
-## Error: could not find function "data.table"
-```
-
-```r
 features <- merge(features, mean.pos, by = "V1", all = TRUE)
-```
-
-```
-## Error: object 'features' not found
-```
-
-```r
 features <- merge(features, std.pos, by = "V1", all = TRUE)
-```
-
-```
-## Error: object 'features' not found
-```
-
-```r
 features$mean.pos <- !is.na(features$mean.pos)
-```
-
-```
-## Error: object 'features' not found
-```
-
-```r
 features$std.pos <- !is.na(features$std.pos)
-```
-
-```
-## Error: object 'features' not found
-```
-
-```r
 mean.std.pos <- as.character(features$V2[features$mean.pos == TRUE | features$std.pos == 
     TRUE])
 ```
 
-```
-## Error: object 'features' not found
-```
 
 
 ## Merging for Test and Train data
@@ -152,116 +52,18 @@ Now the actual test and train data can be loaded and cleaned. Here we load the s
 ```r
 # merging for TEST dataset
 subject.test <- read.table("./data/test/subject_test.txt")
-```
-
-```
-## Warning: cannot open file './data/test/subject_test.txt': No such file or
-## directory
-```
-
-```
-## Error: cannot open the connection
-```
-
-```r
 activity.test <- read.table("./data/test/Y_test.txt")
-```
-
-```
-## Warning: cannot open file './data/test/Y_test.txt': No such file or
-## directory
-```
-
-```
-## Error: cannot open the connection
-```
-
-```r
 features.test <- read.table("./data/test/X_test.txt")
-```
-
-```
-## Warning: cannot open file './data/test/X_test.txt': No such file or
-## directory
-```
-
-```
-## Error: cannot open the connection
-```
-
-```r
 names(features.test) <- as.character(features$V2)
-```
-
-```
-## Error: object 'features' not found
-```
-
-```r
 test <- data.table(subject.test, activity.test, features.test)
-```
-
-```
-## Error: could not find function "data.table"
-```
-
-```r
 
 # merging for TRAIN dataset
 subject.train <- read.table("./data/train/subject_train.txt")
-```
-
-```
-## Warning: cannot open file './data/train/subject_train.txt': No such file
-## or directory
-```
-
-```
-## Error: cannot open the connection
-```
-
-```r
 activity.train <- read.table("./data/train/Y_train.txt")
-```
-
-```
-## Warning: cannot open file './data/train/Y_train.txt': No such file or
-## directory
-```
-
-```
-## Error: cannot open the connection
-```
-
-```r
 features.train <- read.table("./data/train/X_train.txt")
-```
-
-```
-## Warning: cannot open file './data/train/X_train.txt': No such file or
-## directory
-```
-
-```
-## Error: cannot open the connection
-```
-
-```r
 names(features.train) <- as.character(features$V2)
-```
-
-```
-## Error: object 'features' not found
-```
-
-```r
 train <- data.table(subject.train, activity.train, features.train)
 ```
-
-```
-## Error: could not find function "data.table"
-```
-
 
 ## Append main dataset, subset main dataset, and create Tidy Data
 Finally we append these two datasets, to create one large set with all the variables. Now we can use the previously created vector of column names to subset the data to contain only our "mean()" and "std()" appropriate variables as data.sub.  We use this data.sub to create teh final tidy data using the aggregate() function. Lastly we add back in the titles for activity description, and outsheet a dataset as .txt to load to coursera servers.
@@ -269,89 +71,24 @@ Finally we append these two datasets, to create one large set with all the varia
 ```r
 # Appending the TEST and TRAIN datasets
 data <- rbindlist(list(test, train))
-```
-
-```
-## Error: could not find function "rbindlist"
-```
-
-```r
 setnames(data, 1:2, c("subject", "activity.code"))
-```
-
-```
-## Error: could not find function "setnames"
-```
-
-```r
 
 # Subsetting just the mean() and std() variables
 subset.index <- c("subject", "activity.code", mean.std.pos)
-```
-
-```
-## Error: object 'mean.std.pos' not found
-```
-
-```r
 data.sub <- subset(data, select = subset.index)
-```
-
-```
-## Error: argument "subset" is missing, with no default
-```
-
-```r
 
 # collapsing the aggregated, tidy dataset
 tidy.data <- aggregate(x = data.sub, by = list(data.sub$subject, data.sub$activity.code), 
     FUN = mean)
-```
-
-```
-## Error: object 'data.sub' not found
-```
-
-```r
 tidy.data <- subset(tidy.data, select = subset.index)
-```
-
-```
-## Error: object 'tidy.data' not found
-```
-
-```r
 
 # Adding activity description
 data <- merge(activity, data, by = "activity.code", all = TRUE)
-```
-
-```
-## Error: object 'activity' not found
-```
-
-```r
 data.sub <- merge(activity, data.sub, by = "activity.code", all = TRUE)
-```
-
-```
-## Error: object 'activity' not found
-```
-
-```r
 tidy.data <- merge(activity, tidy.data, by = "activity.code", all = TRUE)
-```
-
-```
-## Error: object 'activity' not found
-```
-
-```r
 write.table(tidy.data, "tidy_data.txt")
 ```
 
-```
-## Error: object 'tidy.data' not found
-```
+
 
 
